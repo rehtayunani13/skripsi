@@ -20,9 +20,11 @@ CONST_HEIGHT = 20
 def openImage(filename):
     return opencv.imread(filename, opencv.IMREAD_UNCHANGED)
 
-source_folder = "C:\Program Files (x86)\AKSARA\database\\Data_Training"
-label_file = 'C:\Program Files (x86)\AKSARA\database\Label_Data_Training\\Data_Training_Label.anno'
-output_file = 'C:\Program Files (x86)\AKSARA\database\\aksara.txt'
+# source_folder = "C:\Program Files (x86)\AKSARA\database\\Data_Training"
+source_folder = ""
+# label_file = 'C:\Program Files (x86)\AKSARA\database\Label_Data_Training\\Data_Training_Label.anno'
+label_file = 'Data_Training_Label.anno'
+output_file = 'ress.txt'
 
 def rgb2grayscale(image):
     return opencv.cvtColor(image, opencv.COLOR_BGR2GRAY)
@@ -89,6 +91,7 @@ def vert_profile(args):
 
 
 with open(label_file, "r") as file_input:
+    import ipdb; ipdb.set_trace()
     with open(output_file, "a") as file_output:
         for file_label in file_input:
 
