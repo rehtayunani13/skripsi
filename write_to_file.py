@@ -21,7 +21,7 @@ def openImage(filename):
     return opencv.imread(filename, opencv.IMREAD_UNCHANGED)
 
 # source_folder = "C:\Program Files (x86)\AKSARA\database\\Data_Training"
-source_folder = ""
+source_folder = "Data_Training/"
 # label_file = 'C:\Program Files (x86)\AKSARA\database\Label_Data_Training\\Data_Training_Label.anno'
 label_file = 'Data_Training_Label.anno'
 output_file = 'ress.txt'
@@ -60,64 +60,42 @@ def resize_show_image(image, const_width):
     resized = opencv.resize(image, dim, interpolation=opencv.INTER_AREA)
     return resized
 
-def getProjectionProfile(image):
+def getProjectionProfile(image, projection_type):
     resized_image = resize_image(image)
     gray_image = rgb2grayscale(resized_image)
     np_image = convertNPImage(gray_image)
-    horz_profile = getHorizontalProjectionProfile(np_image)
-    vert_profile = getVerticalProjectionProfile(np_image)
-    return horz_profile
+    if projection_type == 'horz':
+        proj_profile = getHorizontalProjectionProfile(np_image)
+    elif projection_type == 'vert':
+        proj_profile = getVerticalProjectionProfile(np_image)
+    return proj_profile
 
 def getHorizontalProjectionProfile(image):
     image[image == 0] = 1
     image[image == 255] = 0
     horizontal_projection = np.sum(image, axis=1)
-    return horizontal_projection
+    return '['+' '.join(map(str, horizontal_projection))+']' # string with bracket
+    # return ' '.join(map(str, horizontal_projection)) # string without bracket
 
 
 def getVerticalProjectionProfile(image):
     image[image == 0] = 1
     image[image == 255] = 0
     vertical_projection = np.sum(image, axis=0)
-    return vertical_projection
-
-
-def horz_profile(args):
-    pass
-
-
-def vert_profile(args):
-    pass
+    return '['+' '.join(map(str, vertical_projection))+']' # string with bracket
+    # return ' '.join(map(str, vertical_projection)) # string without bracket
 
 
 with open(label_file, "r") as file_input:
-    import ipdb; ipdb.set_trace()
-    with open(output_file, "a") as file_output:
+    with open(output_file, "w") as file_output:
         for file_label in file_input:
 
             file_name, attr1, attr2, attr3, attr4, label = file_label[:-1].split("\t")
-
-
-            def getHorizontalProjectionProfile(image):
-                image[image == 0] = 1
-                image[image == 255] = 0
-                horizontal_projection = np.sum(image, axis=1)
-                return horizontal_projection
-                horz_profile = iutil.getHorizontalProjectionProfile(np_image)
-                max_horz_profile = max(horz_profile)
-                horz_profile = horz_profile / max_horz_profile
-                print(horz_profile)
-
-
-            def getVerticalProjectionProfile(image):
-                image[image == 0] = 1
-                image[image == 255] = 0
-                vertical_projection = np.sum(image, axis=0)
-                return vertical_projection
-                vert_profile = iutil.getVerticalProjectionProfile(np_image)
-                max_vert_profile = max(vert_profile)
-                vert_profile = vert_profile / max_vert_profile
-                print(vert_profile)
-
+            img_path = os.path.join(source_folder, file_name)
+            img = opencv.imread(img_path)
+            horz_profile = getProjectionProfile(img, "horz")
+            vert_profile = getProjectionProfile(img, "vert")
+            # import ipdb; ipdb.set_trace()
+            # print("{filename}\t{label}\t {horz_profile} \t {vert_profile}\n".format(filename=file_name,label=label, horz_profile=horz_profile,vert_profile=vert_profile))
             file_output.write("{filename}\t{label}\t {horz_profile} \t {vert_profile}\n".format(filename=file_name,label=label, horz_profile=horz_profile,vert_profile=vert_profile))
 
